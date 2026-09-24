@@ -1,0 +1,84 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function isAdmin() {
+      return isAuthenticated() && 
+        (request.auth.token.email == 'eladigitalw@gmail.com' ||
+         request.auth.token.email == 'elae2379@gmail.com' || 
+         request.auth.token.admin == true ||
+         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin');
+    }
+    
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    // Users Collection (Allow creation & sync upon login/signup)
+    match /users/{userId} {
+      allow read: if true;
+      allow create, update: if true;
+      allow delete: if isAdmin();
+    }
+
+    // Contact Requests / Project Inquiries (Strict Auth Required)
+    match /contact_requests/{id} {
+      allow create: if isAuthenticated();
+      allow read: if isAdmin() || (isAuthenticated() && (resource.data.userId == request.auth.uid || resource.data.email == request.auth.token.email));
+      allow update, delete: if isAdmin();
+    }
+    
+    // Leads Collection (Strict Auth Required)
+    match /leads/{id} {
+      allow create: if isAuthenticated();
+      allow read, update, delete: if isAdmin();
+    }
+
+    // Consultations (Strict Auth Required)
+    match /consultations/{id} {
+      allow create: if isAuthenticated();
+      allow read: if isAdmin() || (isAuthenticated() && (resource.data.userId == request.auth.uid || resource.data.email == request.auth.token.email));
+      allow update, delete: if isAdmin() || (isAuthenticated() && resource.data.userId == request.auth.uid);
+    }
+
+    // Client Notifications (e.g. Project Accepted alerts to client's phone/dashboard)
+    match /client_notifications/{id} {
+      allow create, read, update: if isAuthenticated();
+      allow delete: if isAdmin();
+    }
+
+    // Public Collections with Admin Write
+    match /projects/{id} {
+      allow read: if true;
+      allow write: if isAdmin() || 
+        (isAuthenticated() && (
+          request.auth.token.email == 'eladigitalw@gmail.com' || 
+          request.auth.token.email == 'elae2379@gmail.com'
+        ));
+    }
+
+    match /services/{id} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /testimonials/{id} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /blog_posts/{id} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /newsletter_subscribers/{id} {
+      allow create: if true;
+      allow read, update, delete: if isAdmin();
+    }
+  }
+}
