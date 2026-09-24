@@ -9,7 +9,9 @@ import {
   Loader2,
   AlertCircle,
   Eye,
-  EyeOff
+  EyeOff,
+  ExternalLink,
+  KeyRound
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 
@@ -33,6 +35,7 @@ export const GoogleSignInModal: React.FC = () => {
   const [isConnecting, setIsConnecting] = useState(false);
   const [statusMessage, setStatusMessage] = useState('');
   const [resetSent, setResetSent] = useState(false);
+  const [inlineInfo, setInlineInfo] = useState<string | null>(null);
 
   if (!isGoogleModalOpen) return null;
 
@@ -40,6 +43,7 @@ export const GoogleSignInModal: React.FC = () => {
     setIsConnecting(true);
     setStatusMessage('Opening Google Authentication...');
     clearAuthError();
+    setInlineInfo(null);
 
     // Safety timeout to ensure spinner NEVER gets stuck indefinitely
     const timeoutId = setTimeout(() => {
@@ -65,6 +69,7 @@ export const GoogleSignInModal: React.FC = () => {
     setIsConnecting(true);
     clearAuthError();
     setResetSent(false);
+    setInlineInfo(null);
 
     try {
       if (authTab === 'signup') {
@@ -81,14 +86,16 @@ export const GoogleSignInModal: React.FC = () => {
   };
 
   const handleForgotPassword = async () => {
+    setInlineInfo(null);
     if (!email.trim() || !email.includes('@')) {
-      alert('Please enter your email in the Email field above first.');
+      setInlineInfo('Please enter your email in the field below to receive the password reset link.');
       return;
     }
     try {
       setIsConnecting(true);
-      await resetPassword(email);
+      await resetPassword(email.trim());
       setResetSent(true);
+      setInlineInfo(`Password reset link sent to ${email.trim()}! Check your inbox or spam folder.`);
     } catch (err: any) {
       console.warn('Reset password error:', err);
     } finally {
@@ -96,13 +103,15 @@ export const GoogleSignInModal: React.FC = () => {
     }
   };
 
+  const isDomainError = authError?.toLowerCase().includes('domain') || authError?.toLowerCase().includes('authorized');
+
   return (
     <div 
       className="fixed inset-0 z-[120] flex items-center justify-center p-3 sm:p-4 bg-slate-950/85 backdrop-blur-xl animate-in fade-in duration-200"
       onClick={closeGoogleModal}
     >
       <div 
-        className="relative w-full max-w-[440px] bg-slate-900 border border-slate-700/80 rounded-3xl shadow-[0_25px_80px_rgba(0,0,0,0.9)] text-slate-100 overflow-hidden font-sans"
+        className="relative w-full max-w-[460px] bg-slate-900 border border-slate-700/80 rounded-3xl shadow-[0_25px_80px_rgba(0,0,0,0.9)] text-slate-100 overflow-hidden font-sans"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Google 4-Color Top Brand Indicator Line */}
@@ -159,7 +168,7 @@ export const GoogleSignInModal: React.FC = () => {
           <div className="flex rounded-xl bg-slate-950 p-1 border border-slate-800 mb-5">
             <button
               type="button"
-              onClick={() => { setAuthTab('google'); clearAuthError(); }}
+              onClick={() => { setAuthTab('google'); clearAuthError(); setInlineInfo(null); }}
               className={`flex-1 py-2 rounded-lg text-xs font-semibold transition-all ${
                 authTab === 'google'
                   ? 'bg-blue-600 text-white shadow'
@@ -170,7 +179,7 @@ export const GoogleSignInModal: React.FC = () => {
             </button>
             <button
               type="button"
-              onClick={() => { setAuthTab('email'); clearAuthError(); }}
+              onClick={() => { setAuthTab('email'); clearAuthError(); setInlineInfo(null); }}
               className={`flex-1 py-2 rounded-lg text-xs font-semibold transition-all ${
                 authTab === 'email'
                   ? 'bg-amber-500 text-slate-950 shadow font-bold'
@@ -181,7 +190,7 @@ export const GoogleSignInModal: React.FC = () => {
             </button>
             <button
               type="button"
-              onClick={() => { setAuthTab('signup'); clearAuthError(); }}
+              onClick={() => { setAuthTab('signup'); clearAuthError(); setInlineInfo(null); }}
               className={`flex-1 py-2 rounded-lg text-xs font-semibold transition-all ${
                 authTab === 'signup'
                   ? 'bg-amber-500 text-slate-950 shadow font-bold'
@@ -200,11 +209,41 @@ export const GoogleSignInModal: React.FC = () => {
             </div>
           )}
 
-          {/* Error Message */}
+          {/* Error Message & Quick Action */}
           {authError && (
-            <div className="mb-4 p-3 rounded-xl bg-red-950/60 border border-red-500/40 text-red-200 text-xs flex items-center gap-2 animate-in fade-in">
-              <AlertCircle className="w-4 h-4 flex-shrink-0 text-red-400" />
-              <span>{authError}</span>
+            <div className="mb-4 p-3.5 rounded-2xl bg-red-950/70 border border-red-500/40 text-red-200 text-xs space-y-2 animate-in fade-in">
+              <div className="flex items-start gap-2">
+                <AlertCircle className="w-4 h-4 flex-shrink-0 text-red-400 mt-0.5" />
+                <span className="leading-relaxed">{authError}</span>
+              </div>
+
+              {/* Helpful 1-Click Action if domain issue or wrong password */}
+              {isDomainError && authTab === 'google' && (
+                <div className="pt-2 border-t border-red-500/20 flex flex-col gap-2">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setAuthTab('email');
+                      clearAuthError();
+                    }}
+                    className="w-full py-2 px-3 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs flex items-center justify-center gap-2 transition-colors cursor-pointer"
+                  >
+                    <Mail className="w-3.5 h-3.5" />
+                    <span>Switch to Email Login / Register</span>
+                  </button>
+                  <p className="text-[10px] text-red-300/80 font-mono">
+                    💡 Tip: Add your Netlify URL to Firebase Console &rarr; Authentication &rarr; Settings &rarr; Authorized Domains to enable Google 1-Click login.
+                  </p>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Inline Information / Success */}
+          {inlineInfo && (
+            <div className="mb-4 p-3 rounded-xl bg-blue-950/60 border border-blue-500/40 text-blue-200 text-xs flex items-center gap-2 animate-in fade-in">
+              <ShieldCheck className="w-4 h-4 text-blue-400 flex-shrink-0" />
+              <span>{inlineInfo}</span>
             </div>
           )}
 
@@ -212,7 +251,7 @@ export const GoogleSignInModal: React.FC = () => {
           {resetSent && (
             <div className="mb-4 p-3 rounded-xl bg-emerald-950/60 border border-emerald-500/40 text-emerald-200 text-xs flex items-center gap-2">
               <ShieldCheck className="w-4 h-4 text-emerald-400 flex-shrink-0" />
-              <span>Password reset email dispatched! Please check your inbox.</span>
+              <span>Password reset email dispatched! Please check your inbox and spam folder.</span>
             </div>
           )}
 
@@ -244,13 +283,13 @@ export const GoogleSignInModal: React.FC = () => {
                 )}
               </button>
 
-              <div className="p-3.5 rounded-xl bg-slate-950/70 border border-slate-800 text-[11px] text-slate-400 space-y-1.5 leading-relaxed">
+              <div className="p-3.5 rounded-xl bg-slate-950/70 border border-slate-800 text-[11px] text-slate-400 space-y-2 leading-relaxed">
                 <p className="flex items-center gap-1.5 text-slate-300 font-medium">
                   <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
                   <span>Real Google Firebase Authentication</span>
                 </p>
                 <p>
-                  Clicking opens your Google Account picker. If you prefer to sign in without popups, switch to the <strong>Email Login</strong> or <strong>Register</strong> tab above.
+                  Clicking opens your Google Account picker. If you prefer to sign in without popups or your domain is newly deployed, click the <button type="button" onClick={() => { setAuthTab('email'); clearAuthError(); }} className="text-amber-400 underline font-semibold">Email Login</button> or <button type="button" onClick={() => { setAuthTab('signup'); clearAuthError(); }} className="text-amber-400 underline font-semibold">Register</button> tab.
                 </p>
               </div>
             </div>
@@ -270,7 +309,7 @@ export const GoogleSignInModal: React.FC = () => {
                     required
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    placeholder="e.g. Karthik Raja"
+                    placeholder="e.g. ELA Digital World"
                     className="w-full bg-slate-950 border border-slate-700 focus:border-amber-400 rounded-xl px-3 py-2.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-amber-400"
                   />
                 </div>
@@ -286,7 +325,7 @@ export const GoogleSignInModal: React.FC = () => {
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="name@example.com"
+                  placeholder="eladigitalw@gmail.com"
                   className="w-full bg-slate-950 border border-slate-700 focus:border-amber-400 rounded-xl px-3 py-2.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-amber-400"
                 />
               </div>
@@ -301,9 +340,10 @@ export const GoogleSignInModal: React.FC = () => {
                     <button
                       type="button"
                       onClick={handleForgotPassword}
-                      className="text-[10px] text-amber-400 hover:underline"
+                      className="text-[11px] text-amber-400 hover:text-amber-300 underline font-medium flex items-center gap-1"
                     >
-                      Forgot?
+                      <KeyRound className="w-3 h-3" />
+                      <span>Forgot / Reset Password?</span>
                     </button>
                   )}
                 </div>
@@ -314,7 +354,7 @@ export const GoogleSignInModal: React.FC = () => {
                     minLength={6}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    placeholder="Minimum 6 characters"
+                    placeholder="Enter password (minimum 6 characters)"
                     className="w-full bg-slate-950 border border-slate-700 focus:border-amber-400 rounded-xl pl-3 pr-10 py-2.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-amber-400"
                   />
                   <button
@@ -339,11 +379,46 @@ export const GoogleSignInModal: React.FC = () => {
                   </>
                 ) : (
                   <>
-                    <span>{authTab === 'signup' ? 'Create Account' : 'Sign In with Password'}</span>
+                    <span>{authTab === 'signup' ? 'Create Account & Sign In' : 'Sign In with Password'}</span>
                     <ArrowRight className="w-3.5 h-3.5" />
                   </>
                 )}
               </button>
+
+              {/* Bottom helper prompt */}
+              <div className="pt-2 text-center text-[11px] text-slate-400">
+                {authTab === 'email' ? (
+                  <p>
+                    Don't have a password yet?{' '}
+                    <button
+                      type="button"
+                      onClick={() => { setAuthTab('signup'); clearAuthError(); setInlineInfo(null); }}
+                      className="text-amber-400 hover:underline font-bold ml-1"
+                    >
+                      Create Account
+                    </button>
+                    {' '}or{' '}
+                    <button
+                      type="button"
+                      onClick={handleForgotPassword}
+                      className="text-blue-400 hover:underline font-bold ml-1"
+                    >
+                      Reset Password
+                    </button>
+                  </p>
+                ) : (
+                  <p>
+                    Already have an account?{' '}
+                    <button
+                      type="button"
+                      onClick={() => { setAuthTab('email'); clearAuthError(); setInlineInfo(null); }}
+                      className="text-amber-400 hover:underline font-bold ml-1"
+                    >
+                      Sign In here
+                    </button>
+                  </p>
+                )}
+              </div>
             </form>
           )}
 

@@ -305,7 +305,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       } else if (err.code === 'auth/popup-closed-by-user' || err.code === 'auth/cancelled-popup-request') {
         errorMsg = 'Sign-in cancelled (popup was closed).';
       } else if (err.code === 'auth/unauthorized-domain') {
-        errorMsg = 'This domain is being authorized. You can sign in using Email & Password below.';
+        errorMsg = 'This Netlify domain is not yet authorized in Firebase. Please add your Netlify domain in Firebase Console (Authentication > Settings > Authorized Domains), or sign in with Email & Password below.';
       } else if (err.message) {
         errorMsg = err.message;
       }
