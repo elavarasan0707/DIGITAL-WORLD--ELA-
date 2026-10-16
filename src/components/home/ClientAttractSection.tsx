@@ -35,25 +35,25 @@ export const ClientAttractSection: React.FC<ClientAttractSectionProps> = ({ onSe
       id: 'convert',
       stage: '03 / STAGE',
       title: 'Convert',
-      subtitle: 'Lead Generation & Automation',
-      description: 'Automated WhatsApp funnels, conversational AI agents, and 24/7 lead qualification pipelines that close deals while you sleep.',
+      subtitle: 'Meta Ads & Creative Funnels',
+      description: 'Psychological direct-response ad funnels, behavioral triggers, and high-converting creative engines that turn visitors into paying clients.',
       icon: Filter,
       accent: 'from-emerald-500 to-teal-500',
       border: 'hover:border-emerald-400',
       glow: 'group-hover:shadow-[0_0_30px_rgba(16,185,129,0.25)]',
-      serviceQuery: 'WhatsApp Automation'
+      serviceQuery: 'Meta Ads'
     },
     {
       id: 'grow',
       stage: '04 / STAGE',
       title: 'Grow',
-      subtitle: 'Analytics & Business Strategy',
-      description: 'Predictive attribution modeling, LTV optimization, and enterprise advisory roadmaps to turn traffic into lasting enterprise valuation.',
+      subtitle: 'SEO & Brand Dominance',
+      description: 'Organic search supremacy, high-intent buyer capture, and authoritative visual branding to compound long-term enterprise valuation.',
       icon: LineChart,
       accent: 'from-purple-500 to-pink-500',
       border: 'hover:border-purple-400',
       glow: 'group-hover:shadow-[0_0_30px_rgba(168,85,247,0.25)]',
-      serviceQuery: 'Business Growth Strategy'
+      serviceQuery: 'SEO (Search Engine Optimization)'
     }
   ];
 

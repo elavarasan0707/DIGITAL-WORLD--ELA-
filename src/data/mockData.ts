@@ -78,45 +78,6 @@ export const SERVICES_DATA: ServiceItem[] = [
     deliverables: ['Vector master logo suites', 'Complete brand bible & token guidelines', 'Typography & chromatic palettes', 'Social & presentation master templates'],
     resultsTarget: 'Immediate perceived valuation elevation',
     technologies: ['Illustrator', 'Cinema 4D', 'Figma', 'Blender', 'Photoshop']
-  },
-  {
-    id: 'whatsapp-automation',
-    slug: 'whatsapp-automation',
-    title: 'WhatsApp Automation',
-    icon: 'MessageSquare',
-    image: 'https://images.unsplash.com/photo-1577563908411-5077b6dc7624?q=80&w=900&auto=format&fit=crop',
-    shortDescription: 'Automated WhatsApp CRM chatbots, appointment booking bots, and broadcast marketing pipelines.',
-    fullDescription: 'WhatsApp boasts a 98% open rate. We build interactive conversational funnels directly on official WhatsApp Business APIs that handle inquiries, send instant catalogs, collect lead data, and book calendar slots automatically.',
-    keyBenefits: ['Direct 98% open rates vs 18% email', 'Automated 1-click booking confirmation', 'Instant interactive catalog responses', 'Lead auto-tagging and CRM push'],
-    deliverables: ['Official WhatsApp Cloud API verification', 'Custom interactive button menus', 'Webhook integrations to Google Sheets / CRM', 'Pre-approved HSM template setups'],
-    resultsTarget: '85%+ prompt read rate and 4.2x faster response cycle',
-    technologies: ['WhatsApp Business Platform', 'Twilio', 'Meta Graph API', 'Webhooks', 'Make']
-  },
-  {
-    id: 'lead-generation',
-    slug: 'lead-generation',
-    title: 'Lead Generation',
-    icon: 'Zap',
-    image: 'https://images.unsplash.com/photo-1552664730-d307ca884978?q=80&w=900&auto=format&fit=crop',
-    shortDescription: 'Predictable, scalable pipelines of qualified, sales-ready appointments delivered straight to your calendar.',
-    fullDescription: 'No more cold prospecting anxiety. We build automated B2B & B2C acquisition flywheels that combine laser-targeted outreach, magnetic lead magnets, high-converting VSL landing pages, and automated email/SMS nurtures.',
-    keyBenefits: ['Guaranteed pipeline predictability', 'Exclusively qualified prospect filters', 'Automated no-show prevention sequences', 'Full pipeline conversion transparency'],
-    deliverables: ['Custom high-converting funnel pages', 'Automated 7-step email & SMS follow-up', 'Custom CRM pipeline setup', 'Calendar booking link integration'],
-    resultsTarget: 'Consistent 30-100+ qualified monthly booked calls',
-    technologies: ['Apollo.io', 'Clay', 'Instantly', 'Calendly', 'HubSpot']
-  },
-  {
-    id: 'business-growth-strategy',
-    slug: 'business-growth-strategy',
-    title: 'Business Growth Strategy',
-    icon: 'Compass',
-    image: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=900&auto=format&fit=crop',
-    shortDescription: 'Strategic roadmaps, unit economics optimization, pricing modeling, and market expansion tactics.',
-    fullDescription: 'Scaling requires more than random marketing tactics. We partner with founders and executives to audit revenue leaks, redesign high-margin offers, optimize customer lifetime value (LTV), and establish an unshakeable digital moat.',
-    keyBenefits: ['Clarity on highest-leverage growth levers', 'Offer restructuring for high-ticket sales', 'LTV to CAC ratio expansion', 'Scalable organizational frameworks'],
-    deliverables: ['Comprehensive 12-month Growth Blueprint', 'Unit economics & margin models', 'Competitive moat landscape breakdown', 'Monthly executive advisory sessions'],
-    resultsTarget: '2x to 5x top-line growth roadmap alignment',
-    technologies: ['Notion', 'Tableau', 'Miro', 'Financial Models', 'Mixpanel']
   }
 ];
 
